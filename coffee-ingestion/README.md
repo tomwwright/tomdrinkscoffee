@@ -14,3 +14,11 @@ python textract_pdf.py $BUCKET $KEY textract_output.json
 # run table parser against Textract output
 python parse_tables.py textract_output.json
 ```
+
+## Textract Notes
+
+Pricing https://aws.amazon.com/textract/pricing/
+
+Textract costs `$0.0195 per page ($19.50 per 1k)` -- definitely want to minimise unnecessary Textract `AnalyzeDocument` calls.
+
+Upload to S3 -> Analyse with Textract -> Copy result to S3 -> Ingestion
