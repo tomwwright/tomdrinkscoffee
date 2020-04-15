@@ -1,0 +1,5 @@
+type Coffee @model {
+  datetime: AWSDateTime!
+  description: String!
+  amount: Float!
+}

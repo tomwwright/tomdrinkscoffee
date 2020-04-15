@@ -10,7 +10,12 @@
     "@types/node": "^12.0.0",
     "@types/react": "^16.9.0",
     "@types/react-dom": "^16.9.0",
+    "aws-amplify": "^2.2.6",
+    "aws-amplify-react": "^3.1.7",
+    "chart.js": "^2.9.3",
+    "dayjs": "^1.8.22",
     "react": "^16.13.0",
+    "react-chartjs-2": "^2.9.0",
     "react-dom": "^16.13.0",
     "react-scripts": "3.4.0",
     "typescript": "~3.7.2"
@@ -35,5 +40,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@types/lodash": "^4.14.149"
   }
 }
