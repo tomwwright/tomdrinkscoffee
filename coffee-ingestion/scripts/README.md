@@ -35,3 +35,19 @@ tables = camelot.read_pdf("statement-2020-01.pdf", flavor='stream', edge_tol=100
 for index, table in enumerate(tables):
   print(table.df.to_csv())
 ```
+
+## Ingestion pipeline
+
+- .pdf into S3
+- SNS trigger to Lambda
+- Lambda:
+  - drop coffees for month (complicated)
+    - query for all items at beginning to get list of keys
+    - get difference of list of all keys and list of parsed keys
+    - `BatchWriteItem` to delete keys in difference
+  - parse with Camelot
+  - push coffees into Dynamo
+
+Cloudformation:
+
+- parameter for Dynamo table
