@@ -37,7 +37,6 @@ def parse_coffee_transactions(input_csv, year):
       dt = pandas.to_datetime(current_date + ' ' + date_or_time, infer_datetime_format=True)
 
       description = str(series.get(2))
-      amount = float(series.get(4).replace('$', '').replace(',', ''))
 
       coffee_lookup = {
           'SQ *COFFEE PLUS OF': 5.0,
@@ -51,6 +50,7 @@ def parse_coffee_transactions(input_csv, year):
       for key, value in coffee_lookup.items():
         if key in description:
           is_coffee = True
+          amount = float(series.get(4).replace('$', '').replace(',', ''))
           lookup_amount = min(value, amount)
 
       if is_coffee:
