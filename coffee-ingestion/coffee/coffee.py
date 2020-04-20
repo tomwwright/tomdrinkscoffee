@@ -55,7 +55,7 @@ def parse_coffee_transactions(input_csv, year):
         coffees.append({
             'datetime': str(datetime),
             'description': description,
-            'amount': amount
+            'amount': lookup_amount
         })
 
   coffees.sort(key=lambda coffee: coffee['datetime'])
