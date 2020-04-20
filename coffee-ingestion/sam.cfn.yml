@@ -225,15 +225,6 @@ Resources:
       Description: Transform S3 upload event into something usable by the State Machine
       CodeUri: input-transformer
       Handler: index.handler
-      InlineCode: |
-        def handler(event, context):
-          bucket = event['detail']['requestParameters']['bucketName']
-          input_key = event['detail']['requestParameters']['key']
-
-          return { 
-            'inputPdfS3Uri': f"s3://{bucket}/{input_key}",
-            'outputCsvS3Uri': f"s3://{bucket}/camelot-outputs/{input_key}.csv"
-          }
       Runtime: python3.7
 
   CoffeeIngestionFunction:
