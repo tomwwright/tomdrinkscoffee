@@ -18,8 +18,8 @@ type Coffee = {
 
 Amplify.configure(awsconfig);
 
-const listCoffeesQuery = `query listCoffees {
-  listCoffees {
+const listCoffeesQuery = `query listCoffees($limit: Int!) {
+  listCoffees(limit: $limit) {
     items {
       datetime
       description
@@ -55,7 +55,7 @@ function App() {
   return (
     <div className="App">
       <h1>Tom drinks Coffee</h1>
-      <Connect query={graphqlOperation(listCoffeesQuery)}>
+      <Connect query={graphqlOperation(listCoffeesQuery, { limit: 300 })}>
         {(result: IConnectState) => {
           return (
             <div>
