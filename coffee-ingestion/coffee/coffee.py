@@ -89,14 +89,16 @@ def main(csv_s3_uri, year, month):
 
 
 def handler(event, context):
-  logging.basicConfig(level=logging.INFO)
+  logging.getLogger().setLevel(logging.INFO)
 
   csv_s3_uri = event['outputCsvS3Uri']
   year = event['year']
   month = event['month']
 
+  main(csv_s3_uri, year, month)
+
 
 if __name__ == "__main__":
-  logging.basicConfig(level=logging.INFO)
+  logging.getLogger().setLevel(logging.INFO)
 
   main(sys.argv[1], sys.argv[2], sys.argv[3])
