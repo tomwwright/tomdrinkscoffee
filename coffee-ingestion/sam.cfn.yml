@@ -1,0 +1,250 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Coffee data ingestion pipeline
+Parameters:
+  DynamoDBTableName:
+    Type: String
+    Description: Destination table for coffee ingestion
+  FargateSecurityGroupId:
+    Type: String
+    Description: Security group to attach to Fargate task
+  FargateSubnetId:
+    Type: String
+    Description: Subnet to run Fargate task in
+Transform: AWS::Serverless-2016-10-31
+Resources:
+  S3Bucket:
+    Type: AWS::S3::Bucket
+    Properties: {}
+
+  CamelotParseTaskRepository:
+    Type: AWS::ECR::Repository
+    Properties: {}
+
+  CamelotParseTaskLogs:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      RetentionInDays: 365
+
+  CamelotParseTaskExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ecs-tasks.amazonaws.com
+            Action: "sts:AssumeRole"
+      ManagedPolicyArns:
+        - "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+
+  CamelotParseTaskRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ecs-tasks.amazonaws.com
+            Action: "sts:AssumeRole"
+
+  CamelotParseTaskRolePolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Action:
+              - s3:GetObject
+              - s3:HeadObject
+              - s3:PutObject
+            Resource: !Sub "${S3Bucket.Arn}/*"
+      PolicyName: S3AccessCamelot
+      Roles:
+        - !Ref CamelotParseTaskRole
+
+  CamelotParseTask:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      ContainerDefinitions:
+        - Name: python-camelot
+          Image: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${CamelotParseTaskRepository}:latest"
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-region: !Ref AWS::Region
+              awslogs-group: !Ref CamelotParseTaskLogs
+              awslogs-stream-prefix: ecs
+      Cpu: 256
+      Memory: 512
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      ExecutionRoleArn: !GetAtt CamelotParseTaskExecutionRole.Arn
+      TaskRoleArn: !GetAtt CamelotParseTaskRole.Arn
+
+  S3UploadEventRule:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: Trigger state machine from S3 object upload
+      EventPattern:
+        source:
+          - "aws.s3"
+        detail:
+          eventName:
+            - PutObject
+            - CompleteMultipartUpload
+            - CopyObject
+          requestParameters:
+            bucketName:
+              - !Ref S3Bucket
+            key:
+              - prefix: uploads/
+      Targets:
+        - Arn: !Ref StateMachine
+          Id: StateMachine
+          RoleArn: !GetAtt S3UploadEventRuleRole.Arn
+
+  S3UploadEventRuleRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: events.amazonaws.com
+            Action: "sts:AssumeRole"
+      Policies:
+        - PolicyName: StartStateMachineExecution
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - states:startExecution
+                Resource: !Ref StateMachine
+
+  StateMachine:
+    Type: AWS::StepFunctions::StateMachine
+    Properties:
+      DefinitionString: !Sub |
+        {
+          "StartAt": "TransformInput",
+          "States": {
+            "TransformInput": {
+              "Type": "Task",
+              "Resource": "${InputTransformerFunction.Arn}",
+              "Next": "RunCamelotECSTask"
+            },
+            "RunCamelotECSTask": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::ecs:runTask.sync",
+              "Parameters": {
+                "TaskDefinition": "${CamelotParseTask}",
+                "LaunchType": "FARGATE",
+                "NetworkConfiguration": {
+                  "AwsvpcConfiguration": {
+                    "Subnets":["${FargateSubnetId}"],
+                    "SecurityGroups":["${FargateSecurityGroupId}"],
+                    "AssignPublicIp":"ENABLED"
+                  }
+                },
+                "Overrides": {
+                  "ContainerOverrides": [
+                    {
+                      "Name": "python-camelot",
+                      "Command": ["python", "parse_camelot.py"],
+                      "Environment": [
+                        {
+                          "Name": "INPUT_S3_URI",
+                          "Value.$": "$.inputPdfS3Uri"
+                        },
+                        {
+                          "Name": "OUTPUT_S3_URI",
+                          "Value.$": "$.outputCsvS3Uri"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              "ResultPath": "$.fargateTask",
+              "Next": "IngestCoffee"
+            },
+            "IngestCoffee": {
+              "Type": "Task",
+              "Resource": "${CoffeeIngestionFunction.Arn}",
+              "End": true
+            }
+          }
+        }
+      RoleArn: !GetAtt StateMachineRole.Arn
+
+  StateMachineRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: states.amazonaws.com
+            Action: "sts:AssumeRole"
+      Policies:
+        - PolicyName: RunECSTask
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - iam:PassRole
+                Resource:
+                  - !GetAtt CamelotParseTaskRole.Arn
+                  - !GetAtt CamelotParseTaskExecutionRole.Arn
+              - Effect: Allow
+                Action:
+                  - ecs:RunTask
+                  - ecs:StopTask
+                  - ecs:DescribeTasks
+                Resource: "*"
+              - Effect: Allow
+                Action:
+                  - events:PutTargets
+                  - events:PutRule
+                  - events:DescribeRule
+                Resource: !Sub arn:aws:events:${AWS::Region}:${AWS::AccountId}:rule/StepFunctionsGetEventsForECSTaskRule
+              - Effect: Allow
+                Action:
+                  - lambda:InvokeFunction
+                Resource:
+                  - !GetAtt CoffeeIngestionFunction.Arn
+                  - !GetAtt InputTransformerFunction.Arn
+
+  InputTransformerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Description: Transform S3 upload event into something usable by the State Machine
+      CodeUri: input-transformer
+      Handler: index.handler
+      InlineCode: |
+        def handler(event, context):
+          bucket = event['detail']['requestParameters']['bucketName']
+          input_key = event['detail']['requestParameters']['key']
+
+          return { 
+            'inputPdfS3Uri': f"s3://{bucket}/{input_key}",
+            'outputCsvS3Uri': f"s3://{bucket}/camelot-outputs/{input_key}.csv"
+          }
+      Runtime: python3.7
+
+  CoffeeIngestionFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: coffee
+      Description: Finds coffee transactions in .csv scraped from Up statements and pushes Coffee objects into DynamoDB
+      Handler: coffee.handler
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref DynamoDBTableName
+        - S3ReadPolicy:
+            BucketName: !Ref S3Bucket
+      Runtime: python3.7

@@ -2,3 +2,6 @@
 *.pdf
 *.json
 *.csv
+
+.aws-sam
+*.out.cfn.yml
