@@ -3,5 +3,7 @@
 *.json
 *.csv
 
+*.pyc
+
 .aws-sam
 *.out.cfn.yml
