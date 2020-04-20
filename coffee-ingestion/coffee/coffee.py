@@ -6,6 +6,8 @@ import boto3
 import os
 from dynamodb import insert_coffee_transactions
 import logging
+from datetime import datetime
+import pytz
 
 
 def parse_coffee_transactions(input_csv, year):
@@ -32,7 +34,7 @@ def parse_coffee_transactions(input_csv, year):
 
     is_transaction = re.match(r'\d+:\d+(am|pm)', date_or_time)
     if is_transaction:
-      datetime = pandas.to_datetime(current_date + ' ' + date_or_time, infer_datetime_format=True)
+      dt = pandas.to_datetime(current_date + ' ' + date_or_time, infer_datetime_format=True)
 
       description = str(series.get(2))
       amount = float(series.get(4).replace('$', '').replace(',', ''))
@@ -52,8 +54,11 @@ def parse_coffee_transactions(input_csv, year):
           lookup_amount = min(value, amount)
 
       if is_coffee:
+
+        tz = pytz.timezone("Australia/Melbourne")
+
         coffees.append({
-            'datetime': str(datetime),
+            'datetime': tz.localize(datetime.fromisoformat(str(dt))).isoformat(timespec='milliseconds'),
             'description': description,
             'amount': lookup_amount
         })

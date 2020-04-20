@@ -3,7 +3,7 @@ from pynamodb.models import Model
 from pynamodb.attributes import (
     UnicodeAttribute, NumberAttribute
 )
-from datetime import datetime
+from datetime import datetime, timezone
 import logging
 import uuid
 
@@ -49,9 +49,9 @@ def create_coffee(Coffee, data):
   coffee.id = str(uuid.uuid4())
   coffee.description = data['description']
   coffee.amount = float(data['amount'])
-  coffee.datetime = datetime.fromisoformat(data['datetime']).isoformat()
-  coffee.createdAt = datetime.now().isoformat()
-  coffee.updatedAt = datetime.now().isoformat()
+  coffee.datetime = datetime.fromisoformat(data['datetime']).isoformat(timespec='milliseconds')
+  coffee.createdAt = datetime.now(timezone.utc).isoformat(timespec='milliseconds')
+  coffee.updatedAt = datetime.now(timezone.utc).isoformat(timespec='milliseconds')
 
   return coffee
 
