@@ -232,6 +232,9 @@ Resources:
     Properties:
       CodeUri: coffee
       Description: Finds coffee transactions in .csv scraped from Up statements and pushes Coffee objects into DynamoDB
+      Environment:
+        Variables:
+          DYNAMODB_TABLE_NAME: !Ref DynamoDBTableName
       Handler: coffee.handler
       Policies:
         - DynamoDBCrudPolicy:
@@ -239,3 +242,4 @@ Resources:
         - S3ReadPolicy:
             BucketName: !Ref S3Bucket
       Runtime: python3.7
+      Timeout: 60
