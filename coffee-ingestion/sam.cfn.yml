@@ -236,6 +236,8 @@ Resources:
         Variables:
           DYNAMODB_TABLE_NAME: !Ref DynamoDBTableName
       Handler: coffee.handler
+      Layers:
+        - !Ref PandasLayer
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref DynamoDBTableName
@@ -243,3 +245,11 @@ Resources:
             BucketName: !Ref S3Bucket
       Runtime: python3.7
       Timeout: 60
+
+  PandasLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      Description: Dependency layer for pandas
+      ContentUri: pandas
+      CompatibleRuntimes:
+        - python3.7

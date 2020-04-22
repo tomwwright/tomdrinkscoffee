@@ -1,4 +1,3 @@
 boto3
-pandas
 pynamodb
 pytz
