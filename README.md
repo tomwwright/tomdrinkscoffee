@@ -13,3 +13,9 @@ Toy project for learning :notebook_with_decorative_cover:
 ![AWS Architecture](tomdrinkscoffee.png)
 
 [tomdrinkscoffee draw.io diagram](tomdrinkscoffee.drawio)
+
+### Rotating AppSync API Key when it expires
+
+Set `CreateAPIKey: 0` in `coffee-app/amplify/backend/api/coffee/parameters.json`
+
+https://github.com/aws-amplify/amplify-cli/issues/1450
