@@ -7,9 +7,10 @@ import { graphqlOperation } from "aws-amplify";
 import { Connect } from "aws-amplify-react";
 import { IConnectState } from "aws-amplify-react/lib-esm/API/GraphQL/Connect";
 import { LineGraph } from "../../components/LineGraph";
+import { DoughnutGraph } from "../../components/DoughnutGraph";
 
 import { listCoffeesQuery } from "./queries";
-import { constructChartData } from "./utils";
+import { constructChartData, constructDoughnutGraphData } from "./utils";
 
 const styles = (theme: Theme) => ({
   root: {
@@ -29,7 +30,18 @@ const CoffeeSection: React.StatelessComponent<CoffeeSectionProps> = (props) => {
         Tom Drinks Coffee.
         <Connect query={graphqlOperation(listCoffeesQuery, { limit: 300 })}>
           {(result: IConnectState) => {
-            return <React.Fragment>{result.loading ? <h3>loading ...</h3> : <LineGraph data={constructChartData(result.data.listCoffees.items)} />}</React.Fragment>;
+            return (
+              <React.Fragment>
+                {result.loading ? (
+                  <h3>loading ...</h3>
+                ) : (
+                  <React.Fragment>
+                    <LineGraph data={constructChartData(result.data.listCoffees.items)} />
+                    <DoughnutGraph data={constructDoughnutGraphData(result.data.listCoffees.items)} />
+                  </React.Fragment>
+                )}
+              </React.Fragment>
+            );
           }}
         </Connect>
       </Typography>
