@@ -9,7 +9,7 @@ const styles = (theme) => ({
     color: theme.palette.common.white,
     position: "relative",
     display: "flex",
-    alignItems: "center",
+    alignItems: "left",
     [theme.breakpoints.up("sm")]: {
       height: "80vh",
       minHeight: 500,
@@ -17,11 +17,11 @@ const styles = (theme) => ({
     },
   },
   container: {
-    marginTop: theme.spacing(3),
+    marginTop: theme.spacing(12),
     marginBottom: theme.spacing(14),
     display: "flex",
     flexDirection: "column",
-    alignItems: "center",
+    alignItems: "left",
   },
   backdrop: {
     position: "absolute",
@@ -43,10 +43,6 @@ const styles = (theme) => ({
     backgroundRepeat: "no-repeat",
     zIndex: -2,
   },
-  arrowDown: {
-    position: "absolute",
-    bottom: theme.spacing(4),
-  },
 });
 
 function ProductHeroLayout(props) {
@@ -55,11 +51,9 @@ function ProductHeroLayout(props) {
   return (
     <section className={classes.root}>
       <Container className={classes.container}>
-        <img src="/static/themes/onepirate/productHeroWonder.png" alt="wonder" width="147" height="80" />
         {children}
         <div className={classes.backdrop} />
         <div className={clsx(classes.background, backgroundClassName)} />
-        <img className={classes.arrowDown} src="/static/themes/onepirate/productHeroArrowDown.png" height="16" width="12" alt="arrow down" />
       </Container>
     </section>
   );
