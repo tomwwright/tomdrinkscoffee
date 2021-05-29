@@ -1,5 +1,5 @@
-// tslint:disable
-// eslint-disable
+/* tslint:disable */
+/* eslint-disable */
 // this is an auto generated file. This will be overwritten
 
 export const createCoffee = /* GraphQL */ `
@@ -8,9 +8,12 @@ export const createCoffee = /* GraphQL */ `
     $condition: ModelCoffeeConditionInput
   ) {
     createCoffee(input: $input, condition: $condition) {
+      id
       datetime
       description
       amount
+      createdAt
+      updatedAt
     }
   }
 `;
@@ -20,9 +23,12 @@ export const updateCoffee = /* GraphQL */ `
     $condition: ModelCoffeeConditionInput
   ) {
     updateCoffee(input: $input, condition: $condition) {
+      id
       datetime
       description
       amount
+      createdAt
+      updatedAt
     }
   }
 `;
@@ -32,9 +38,12 @@ export const deleteCoffee = /* GraphQL */ `
     $condition: ModelCoffeeConditionInput
   ) {
     deleteCoffee(input: $input, condition: $condition) {
+      id
       datetime
       description
       amount
+      createdAt
+      updatedAt
     }
   }
 `;

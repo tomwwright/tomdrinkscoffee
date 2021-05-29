@@ -1,4 +1,4 @@
 {
-    "CreateAPIKey": 1,
-    "DynamoDBBillingMode": "PAY_PER_REQUEST"
+  "CreateAPIKey": 1,
+  "DynamoDBBillingMode": "PAY_PER_REQUEST"
 }

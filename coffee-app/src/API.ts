@@ -3,6 +3,7 @@
 //  This file was automatically generated and should not be edited.
 
 export type CreateCoffeeInput = {
+  id?: string | null,
   datetime: string,
   description: string,
   amount: number,
@@ -69,6 +70,16 @@ export type ModelFloatInput = {
   attributeType?: ModelAttributeTypes | null,
 };
 
+export type Coffee = {
+  __typename: "Coffee",
+  id?: string,
+  datetime?: string,
+  description?: string,
+  amount?: number,
+  createdAt?: string,
+  updatedAt?: string,
+};
+
 export type UpdateCoffeeInput = {
   datetime?: string | null,
   description?: string | null,
@@ -76,7 +87,7 @@ export type UpdateCoffeeInput = {
 };
 
 export type DeleteCoffeeInput = {
-  id?: string | null,
+  id: string,
 };
 
 export type ModelCoffeeFilterInput = {
@@ -88,58 +99,76 @@ export type ModelCoffeeFilterInput = {
   not?: ModelCoffeeFilterInput | null,
 };
 
+export type ModelCoffeeConnection = {
+  __typename: "ModelCoffeeConnection",
+  items?:  Array<Coffee | null > | null,
+  nextToken?: string | null,
+};
+
 export type CreateCoffeeMutationVariables = {
-  input: CreateCoffeeInput,
+  input?: CreateCoffeeInput,
   condition?: ModelCoffeeConditionInput | null,
 };
 
 export type CreateCoffeeMutation = {
-  createCoffee:  {
+  createCoffee?:  {
     __typename: "Coffee",
+    id: string,
     datetime: string,
     description: string,
     amount: number,
+    createdAt: string,
+    updatedAt: string,
   } | null,
 };
 
 export type UpdateCoffeeMutationVariables = {
-  input: UpdateCoffeeInput,
+  input?: UpdateCoffeeInput,
   condition?: ModelCoffeeConditionInput | null,
 };
 
 export type UpdateCoffeeMutation = {
-  updateCoffee:  {
+  updateCoffee?:  {
     __typename: "Coffee",
+    id: string,
     datetime: string,
     description: string,
     amount: number,
+    createdAt: string,
+    updatedAt: string,
   } | null,
 };
 
 export type DeleteCoffeeMutationVariables = {
-  input: DeleteCoffeeInput,
+  input?: DeleteCoffeeInput,
   condition?: ModelCoffeeConditionInput | null,
 };
 
 export type DeleteCoffeeMutation = {
-  deleteCoffee:  {
+  deleteCoffee?:  {
     __typename: "Coffee",
+    id: string,
     datetime: string,
     description: string,
     amount: number,
+    createdAt: string,
+    updatedAt: string,
   } | null,
 };
 
 export type GetCoffeeQueryVariables = {
-  id: string,
+  id?: string,
 };
 
 export type GetCoffeeQuery = {
-  getCoffee:  {
+  getCoffee?:  {
     __typename: "Coffee",
+    id: string,
     datetime: string,
     description: string,
     amount: number,
+    createdAt: string,
+    updatedAt: string,
   } | null,
 };
 
@@ -150,41 +179,53 @@ export type ListCoffeesQueryVariables = {
 };
 
 export type ListCoffeesQuery = {
-  listCoffees:  {
+  listCoffees?:  {
     __typename: "ModelCoffeeConnection",
-    items:  Array< {
+    items?:  Array< {
       __typename: "Coffee",
+      id: string,
       datetime: string,
       description: string,
       amount: number,
+      createdAt: string,
+      updatedAt: string,
     } | null > | null,
-    nextToken: string | null,
+    nextToken?: string | null,
   } | null,
 };
 
 export type OnCreateCoffeeSubscription = {
-  onCreateCoffee:  {
+  onCreateCoffee?:  {
     __typename: "Coffee",
+    id: string,
     datetime: string,
     description: string,
     amount: number,
+    createdAt: string,
+    updatedAt: string,
   } | null,
 };
 
 export type OnUpdateCoffeeSubscription = {
-  onUpdateCoffee:  {
+  onUpdateCoffee?:  {
     __typename: "Coffee",
+    id: string,
     datetime: string,
     description: string,
     amount: number,
+    createdAt: string,
+    updatedAt: string,
   } | null,
 };
 
 export type OnDeleteCoffeeSubscription = {
-  onDeleteCoffee:  {
+  onDeleteCoffee?:  {
     __typename: "Coffee",
+    id: string,
     datetime: string,
     description: string,
     amount: number,
+    createdAt: string,
+    updatedAt: string,
   } | null,
 };
