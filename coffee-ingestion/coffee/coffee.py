@@ -9,6 +9,17 @@ import logging
 from datetime import datetime
 import pytz
 
+def build_coffee_lookup():
+  return {
+      'SQ *COFFEE PLUS OF': 5.0,    # Coffe + Office, Fitzroy
+      'SQ *LITTLE TEMPERANC': 5.0,  # Little Temperance, Melbourne
+      '7-ELEVEN': 2.0,              # 7-Eleven (Any)
+      'DIRTY APRON': 4.3,           # Dirty Apron, Clifton Hill
+      'LFAC, RICHMOND': 5.0,        # Little Frenchie and Co., Richmond
+      'A THOUSAND BLESSINGS, RICHMOND': 5.0,  # A Thousand Blessings, Richmond
+      'SMP*St James Richmond': 5.0, # St. James, Richmond
+      'VERTUE COFFEE': 4.50,        # Vertue Coffee Roasters, Richmond
+  }
 
 def parse_coffee_transactions(input_csv, year):
   data = pandas.read_csv(input_csv, header=None)
@@ -38,12 +49,7 @@ def parse_coffee_transactions(input_csv, year):
 
       description = str(series.get(2))
 
-      coffee_lookup = {
-          'SQ *COFFEE PLUS OF': 5.0,
-          'SQ *LITTLE TEMPERANC': 5.0,
-          '7-ELEVEN': 2.0,
-          'DIRTY APRON': 4.3
-      }
+      coffee_lookup = build_coffee_lookup()
 
       is_coffee = False
       lookup_amount = 0
