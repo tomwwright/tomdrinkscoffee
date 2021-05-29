@@ -12,7 +12,7 @@
     "@types/react-dom": "^16.9.0",
     "aws-amplify": "^4.0.3",
     "aws-amplify-react": "^5.0.1",
-    "chart.js": "^2.9.3",
+    "chart.js": "^2.9.4",
     "dayjs": "^1.8.22",
     "react": "^16.13.0",
     "react-chartjs-2": "^2.9.0",
