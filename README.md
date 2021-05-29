@@ -19,3 +19,11 @@ Toy project for learning :notebook_with_decorative_cover:
 Set `CreateAPIKey: 0` in `coffee-app/amplify/backend/api/coffee/parameters.json`
 
 https://github.com/aws-amplify/amplify-cli/issues/1450
+
+### Extending expiry of AppSync API Key
+
+Run script to reset expiry to 1 year in the future
+
+```
+bin/update-api-key.sh
+```
